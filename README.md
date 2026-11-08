@@ -47,6 +47,12 @@ Download the latest release from [GitHub Releases](../../releases/latest).
 | **Assets Folder** | Offline export to the default Fortnite Porting assets directory while maintaining folder structure |
 | **Custom Folder** | Offline export to a directory of your choice without maintaining folder structure |
 
+## UEFN Auto Import
+
+Fortnite Porting includes a **UEFN** page under **Plugins** that watches your export folder and imports new
+assets into a selected UEFN project through UEFN's Python Editor Scripting/Interchange importer.
+See [plugins/UEFN/README.md](plugins/UEFN/README.md) for setup, the companion script, and troubleshooting.
+
 ---
 
 ## Building from Source

@@ -10,6 +10,7 @@ public partial class PluginViewModel : ViewModelBase
 {
     [ObservableProperty] private BlenderPluginViewModel _blender = new();
     [ObservableProperty] private UnrealPluginViewModel _unreal = new();
+    [ObservableProperty] private UefnPluginViewModel _uefn = new();
 
     public string? ExportAutoLaunchPath(EExportLocation exportLocation) => exportLocation switch
     {

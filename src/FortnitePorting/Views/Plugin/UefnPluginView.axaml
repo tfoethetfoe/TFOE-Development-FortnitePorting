@@ -1,0 +1,235 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ext="clr-namespace:FortnitePorting.Extensions;assembly=FortnitePorting"
+             xmlns:controls="clr-namespace:FortnitePorting.Controls"
+             xmlns:settingsControls="clr-namespace:FortnitePorting.Controls.Settings"
+             xmlns:material="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:plugin="clr-namespace:FortnitePorting.ViewModels.Plugin"
+             xmlns:uefn="clr-namespace:FortnitePorting.Models.Uefn"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="650"
+             x:Class="FortnitePorting.Views.Plugin.UefnPluginView"
+             x:DataType="plugin:UefnPluginViewModel">
+    <ScrollViewer>
+        <StackPanel VerticalAlignment="Top" Margin="{ext:Space 2, 2, 2, 1}" Spacing="{ext:Space 1.5}">
+            <controls:ContentCard Padding="{ext:Space 2}">
+                <Grid ColumnDefinitions="Auto * Auto">
+                    <Border Grid.Column="0" Width="52" Height="52" CornerRadius="14"
+                            Background="{DynamicResource FPButtonBackgroundBright}"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="UEFN" FontFamily="{StaticResource SFTextSemiBold}" FontSize="13"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                    </Border>
+
+                    <StackPanel Grid.Column="1" Margin="{ext:Space 2, 0, 0, 0}" VerticalAlignment="Center" Spacing="{ext:Space 0.25}">
+                        <StackPanel Orientation="Horizontal" Spacing="{ext:Space 1}">
+                            <TextBlock Text="Unreal Editor for Fortnite" Classes="BodyStrongTextBlockStyle" />
+                            <Border CornerRadius="10" Padding="{ext:Space 1, 0.25}" Background="{Binding AutoImportStatusBrush}">
+                                <TextBlock Text="{Binding AutoImportStatus}" FontSize="11" Foreground="White" />
+                            </Border>
+                        </StackPanel>
+                        <TextBlock Text="Import Fortnite Porting exports directly into your UEFN project."
+                                   Classes="CaptionTextBlockStyle TextFillColorSecondaryBrush" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{ext:Space 1}" VerticalAlignment="Center">
+                        <Button Command="{Binding SetUpProjectCommand}" IsEnabled="{Binding CanSetUpProject}">
+                            <controls:IconText Text="Set Up UEFN Project" Icon="Wrench" />
+                        </Button>
+                        <Button Command="{Binding RefreshBridgeCommand}" IsEnabled="{Binding !IsBusy}">
+                            <controls:IconText Text="Check UEFN" Icon="Refresh" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </controls:ContentCard>
+
+            <Border IsVisible="{Binding SetupRequired}" CornerRadius="12" Padding="{ext:Space 1.5}"
+                    Background="{DynamicResource FPButtonBackgroundBright}">
+                <Grid ColumnDefinitions="Auto *">
+                    <material:MaterialIcon Grid.Column="0" Kind="AlertCircle" Width="18" Height="18"
+                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <StackPanel Grid.Column="1" Margin="{ext:Space 1, 0, 0, 0}">
+                        <TextBlock Text="UEFN setup required" Classes="BodyStrongTextBlockStyle" />
+                        <TextBlock Text="{Binding SetupStatus}" Classes="CaptionTextBlockStyle TextFillColorSecondaryBrush"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border IsVisible="{Binding RequiresRestart}" CornerRadius="12" Padding="{ext:Space 1.5}"
+                    Background="{DynamicResource FPButtonBackgroundBright}">
+                <TextBlock Text="Restart UEFN before importing. Python Editor Scripting and remote execution are read when the project opens."
+                           Classes="CaptionTextBlockStyle TextFillColorSecondaryBrush" TextWrapping="Wrap" />
+            </Border>
+
+            <TextBlock Text="Project" Classes="SettingsSectionHeaderStyle TextFillColorTertiaryBrush"
+                       HorizontalAlignment="Left" Margin="{ext:Space 1, 0, 0, 0}" />
+
+            <controls:ContentCard Padding="{ext:Space 2}">
+                <Grid ColumnDefinitions="Auto * Auto">
+                    <Border Grid.Column="0" Width="42" Height="42" CornerRadius="10"
+                            Background="{DynamicResource FPButtonBackgroundBright}" VerticalAlignment="Center">
+                        <material:MaterialIcon Kind="Folder" Width="22" Height="22"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+
+                    <StackPanel Grid.Column="1" Margin="{ext:Space 2, 0, 0, 0}" VerticalAlignment="Center" Spacing="{ext:Space 0.25}">
+                        <TextBlock Text="{Binding ProjectName}" Classes="BodyStrongTextBlockStyle" />
+                        <TextBlock Text="{Binding ProjectPath}" Classes="CaptionTextBlockStyle TextFillColorSecondaryBrush"
+                                   TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{Binding ProjectContentPath}" Classes="CaptionTextBlockStyle TextFillColorTertiaryBrush"
+                                   TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{Binding ProjectStatus}" Foreground="{Binding ProjectStatusBrush}"
+                                   Classes="CaptionTextBlockStyle" />
+                    </StackPanel>
+
+                    <Button Grid.Column="2" Command="{Binding BrowseProjectCommand}">
+                        <controls:IconText Text="Browse" Icon="Folder" />
+                    </Button>
+                </Grid>
+            </controls:ContentCard>
+
+            <TextBlock Text="Directories" Classes="SettingsSectionHeaderStyle TextFillColorTertiaryBrush"
+                       HorizontalAlignment="Left" Margin="{ext:Space 1, 1, 0, 0}" />
+
+            <settingsControls:SettingsItem Title="Export Folder"
+                                           Description="Fortnite Porting's export folder. New .glb, .gltf and texture files are detected here.">
+                <settingsControls:SettingsItem.Footer>
+                    <Button Command="{Binding BrowseExportFolderCommand}">
+                        <controls:IconText Text="Browse" Icon="Folder" />
+                    </Button>
+                </settingsControls:SettingsItem.Footer>
+                <settingsControls:SettingsItem.Content>
+                    <TextBlock Text="{Binding ExportFolder}" Classes="BodyTextBlockStyle TextFillColorSecondaryBrush"
+                               TextTrimming="CharacterEllipsis" />
+                </settingsControls:SettingsItem.Content>
+            </settingsControls:SettingsItem>
+
+            <settingsControls:SettingsItem Title="Import Folder"
+                                           Description="Destination inside the UEFN project's Content folder.">
+                <settingsControls:SettingsItem.Footer>
+                    <Button Command="{Binding BrowseImportFolderCommand}" IsEnabled="{Binding HasProject}">
+                        <controls:IconText Text="Browse" Icon="Folder" />
+                    </Button>
+                </settingsControls:SettingsItem.Footer>
+                <settingsControls:SettingsItem.Content>
+                    <TextBlock Text="{Binding ImportBrowserPath}" Classes="BodyTextBlockStyle TextFillColorSecondaryBrush" />
+                </settingsControls:SettingsItem.Content>
+            </settingsControls:SettingsItem>
+
+            <TextBlock Text="Importing" Classes="SettingsSectionHeaderStyle TextFillColorTertiaryBrush"
+                       HorizontalAlignment="Left" Margin="{ext:Space 1, 1, 0, 0}" />
+
+            <settingsControls:SettingsItem Title="Auto Import"
+                                           Description="Watch the export folder and import new assets when they finish writing.">
+                <settingsControls:SettingsItem.Footer>
+                    <ToggleSwitch IsChecked="{Binding AutoImport}" />
+                </settingsControls:SettingsItem.Footer>
+            </settingsControls:SettingsItem>
+
+            <settingsControls:SettingsItem Title="Import Textures"
+                                           Description="Import texture files and glTF-embedded textures. Turn off to strip textures from the imported copy.">
+                <settingsControls:SettingsItem.Footer>
+                    <ToggleSwitch IsChecked="{Binding ImportTextures}" />
+                </settingsControls:SettingsItem.Footer>
+            </settingsControls:SettingsItem>
+
+            <settingsControls:SettingsItem Title="Import Materials"
+                                           Description="Import glTF materials. Turn off to strip materials from the imported copy.">
+                <settingsControls:SettingsItem.Footer>
+                    <ToggleSwitch IsChecked="{Binding ImportMaterials}" />
+                </settingsControls:SettingsItem.Footer>
+            </settingsControls:SettingsItem>
+
+            <settingsControls:SettingsItem Title="Organize Assets"
+                                           Description="Sort imports into Meshes, Characters, Environment, Props, Weapons, Textures and Materials folders.">
+                <settingsControls:SettingsItem.Footer>
+                    <ToggleSwitch IsChecked="{Binding OrganizeAssets}" />
+                </settingsControls:SettingsItem.Footer>
+            </settingsControls:SettingsItem>
+
+            <settingsControls:SettingsItem Title="Duplicate Detection"
+                                           Description="Skip identical content and ask before replacing an asset with the same name.">
+                <settingsControls:SettingsItem.Footer>
+                    <ToggleSwitch IsChecked="{Binding DuplicateDetection}" />
+                </settingsControls:SettingsItem.Footer>
+            </settingsControls:SettingsItem>
+
+            <settingsControls:SettingsItem Title="Import Notifications"
+                                           Description="Show a notification when an import succeeds, is skipped, or fails.">
+                <settingsControls:SettingsItem.Footer>
+                    <ToggleSwitch IsChecked="{Binding ImportNotifications}" />
+                </settingsControls:SettingsItem.Footer>
+            </settingsControls:SettingsItem>
+
+            <controls:ContentCard Padding="{ext:Space 2}">
+                <StackPanel Spacing="{ext:Space 1.5}">
+                    <Grid ColumnDefinitions="* Auto Auto">
+                        <StackPanel Grid.Column="0" Spacing="{ext:Space 0.25}">
+                            <TextBlock Text="Import status" Classes="BodyStrongTextBlockStyle" />
+                            <TextBlock Text="{Binding Status}" Classes="CaptionTextBlockStyle TextFillColorSecondaryBrush"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding BridgeStatus}" Classes="CaptionTextBlockStyle TextFillColorTertiaryBrush"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{ext:Space 1}" VerticalAlignment="Center">
+                            <Button Command="{Binding OpenProjectFolderCommand}" IsEnabled="{Binding HasProject}">
+                                <controls:IconText Text="Open Project Folder" Icon="Folder" />
+                            </Button>
+                            <Button Command="{Binding OpenImportFolderCommand}" IsEnabled="{Binding HasProject}">
+                                <controls:IconText Text="Open Import Folder" Icon="FolderOpen" />
+                            </Button>
+                        </StackPanel>
+
+                        <Button Grid.Column="2" Margin="{ext:Space 1, 0, 0, 0}"
+                                Command="{Binding ImportNowCommand}" IsEnabled="{Binding CanImport}">
+                            <controls:IconText Text="Import Now" Icon="Sync" />
+                        </Button>
+                    </Grid>
+
+                    <ProgressBar Value="{Binding Progress}" Maximum="100" Height="5"
+                                 IsVisible="{Binding IsImporting}" />
+                    <TextBlock Text="{Binding ProgressText}" Classes="CaptionTextBlockStyle TextFillColorTertiaryBrush"
+                               IsVisible="{Binding IsImporting}" />
+                </StackPanel>
+            </controls:ContentCard>
+
+            <TextBlock Text="Recent Imports" Classes="SettingsSectionHeaderStyle TextFillColorTertiaryBrush"
+                       HorizontalAlignment="Left" Margin="{ext:Space 1, 1, 0, 0}" />
+
+            <controls:ContentCard Padding="{ext:Space 1}" IsVisible="{Binding HasHistory}">
+                <ScrollViewer MaxHeight="280" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding History}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="uefn:UefnImportHistoryEntry">
+                                <Border BorderBrush="{DynamicResource FPSeparatorColorLayer2}" BorderThickness="0,0,0,1"
+                                        Padding="{ext:Space 1.5, 1}">
+                                    <Grid ColumnDefinitions="Auto * Auto">
+                                        <Border Grid.Column="0" CornerRadius="8" Padding="{ext:Space 1, 0.25}"
+                                                Background="{Binding StatusBrush}" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding StatusText}" FontSize="11" Foreground="White" />
+                                        </Border>
+                                        <StackPanel Grid.Column="1" Margin="{ext:Space 1, 0, 0, 0}" Spacing="{ext:Space 0.125}">
+                                            <TextBlock Text="{Binding PackageName}" Classes="BodyStrongTextBlockStyle" />
+                                            <TextBlock Text="{Binding Message}" Classes="CaptionTextBlockStyle TextFillColorSecondaryBrush"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" Text="{Binding TimeDisplay}" VerticalAlignment="Center"
+                                                   Classes="CaptionTextBlockStyle TextFillColorTertiaryBrush" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </controls:ContentCard>
+
+            <TextBlock Text="No imports yet. Select a project and export folder, then use Import Now or enable Auto Import."
+                       Classes="CaptionTextBlockStyle TextFillColorTertiaryBrush"
+                       IsVisible="{Binding HasNoHistory}" Margin="{ext:Space 1, 0, 0, 1}" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

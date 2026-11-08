@@ -23,8 +23,14 @@ public partial class PluginView : ViewBase<PluginViewModel>
     
     private void OnItemSelected(object? sender, SidebarItemSelectedArgs e)
     {
-        if (e.Tag is not EExportLocation exportLocation) return;
-
-        Navigation.Plugin.Open(exportLocation);
+        switch (e.Tag)
+        {
+            case EExportLocation exportLocation:
+                Navigation.Plugin.Open(exportLocation);
+                break;
+            case Type viewType:
+                Navigation.Plugin.Open(viewType);
+                break;
+        }
     }
 }

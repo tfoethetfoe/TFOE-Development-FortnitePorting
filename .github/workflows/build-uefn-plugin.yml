@@ -1,0 +1,75 @@
+name: Build UEFN Plugin
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/build-uefn-plugin.yml'
+      - 'plugins/UEFN/**'
+      - 'plugins/Resources.props'
+      - 'src/FortnitePorting/**'
+      - 'src/FortnitePorting.Exporting/**'
+      - 'src/Directory.Packages.props'
+      - 'src/FortnitePorting.sln*'
+      - 'external/CUE4Parse/**'
+      - 'external/UEFormat/**'
+  pull_request:
+    paths:
+      - '.github/workflows/build-uefn-plugin.yml'
+      - 'plugins/UEFN/**'
+      - 'plugins/Resources.props'
+      - 'src/FortnitePorting/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Fortnite Porting (Windows)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore src/FortnitePorting/FortnitePorting.csproj
+
+      - name: Build
+        run: dotnet build src/FortnitePorting/FortnitePorting.csproj -c Release --no-restore
+
+      - name: Package companion importer
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          Copy-Item plugins/UEFN/Content/Python/fortnite_porting_uefn.py artifacts/
+          Copy-Item plugins/UEFN/README.md artifacts/
+
+      - name: Upload companion importer
+        uses: actions/upload-artifact@v4
+        with:
+          name: fortnite-porting-uefn
+          path: artifacts/
+          if-no-files-found: error
+
+  python:
+    name: Check companion importer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Compile companion script
+        run: python -m py_compile plugins/UEFN/Content/Python/fortnite_porting_uefn.py

@@ -222,6 +222,9 @@ public class AppService : IService
             Navigation.App.Open<HomeView>();
         }
 
+        if (AppSettings.Plugin.Uefn is { } uefnViewModel)
+            uefnViewModel.StartWatchingIfEnabled();
+
         if (e.Args is { Length: > 0 } args
             && args[0].StartsWith($"{SCHEME_NAME}://", StringComparison.OrdinalIgnoreCase))
         {
@@ -231,6 +234,8 @@ public class AppService : IService
 
     private void OnAppExit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
     {
+        AppSettings.Plugin.Uefn?.OnApplicationExit();
+
         if (AppSettings.ShouldSaveOnExit)
             AppSettings.Save();
         

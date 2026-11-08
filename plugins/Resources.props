@@ -16,6 +16,9 @@
                           Exclude="$(PluginRoot)Unreal\UEFormat\**"
                           Link="Unreal\%(RecursiveDir)%(Filename)%(Extension)"
                           Visible="false"/>
+        <AvaloniaResource Include="$(PluginRoot)UEFN\Content\**\*"
+                          Link="UEFN\Content\%(RecursiveDir)%(Filename)%(Extension)"
+                          Visible="false"/>
     </ItemGroup>
 
     <Target Name="SyncUEFormatPlugins" BeforeTargets="PrepareForBuild;GenerateAvaloniaResources">

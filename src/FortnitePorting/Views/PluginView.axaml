@@ -6,6 +6,7 @@
              xmlns:fortnitePorting="clr-namespace:FortnitePorting"
              xmlns:fpExport="clr-namespace:FortnitePorting;assembly=FortnitePorting.Exporting"
              xmlns:sidebar="clr-namespace:FortnitePorting.Controls.Navigation.Sidebar"
+             xmlns:plugin="clr-namespace:FortnitePorting.Views.Plugin"
              d:DesignHeight="770" d:DesignWidth="1160"
              x:Class="FortnitePorting.Views.PluginView"
              x:DataType="viewModels:PluginViewModel">
@@ -21,6 +22,7 @@
                 <sidebar:SidebarItemText Text="Plugins"/>
                 <sidebar:SidebarItemButton Text="Blender" IconBitmap="/Assets/Icons/Blender.png" Tag="{x:Static fpExport:EExportLocation.Blender}"/>
                 <sidebar:SidebarItemButton Text="Unreal" IconBitmap="/Assets/Icons/Unreal.png" Tag="{x:Static fpExport:EExportLocation.Unreal}"/>
+                <sidebar:SidebarItemButton Text="UEFN" Icon="Folder" Tag="{x:Type plugin:UefnPluginView}"/>
             </sidebar:Sidebar.Items>
         </sidebar:Sidebar>
         
