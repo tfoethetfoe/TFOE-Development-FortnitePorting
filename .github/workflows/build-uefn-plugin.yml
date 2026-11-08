@@ -2,7 +2,7 @@ name: Build UEFN Plugin
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, 'freebuff/**' ]
     paths:
       - '.github/workflows/build-uefn-plugin.yml'
       - 'plugins/UEFN/**'
@@ -31,8 +31,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
+
+      # CUE4Parse's native CMake build needs ACL and its RTM headers. Do not use
+      # recursive submodule checkout: ACL also carries Catch2/benchmark test
+      # submodules whose nested paths exceed Windows' path limit.
+      - name: Initialize required submodules
+        shell: pwsh
+        run: |
+          git config --global core.longpaths true
+          git submodule update --init --depth=1 external/CUE4Parse external/FluentAvalonia.BreadcrumbBar external/UEFormat
+          git -C external/CUE4Parse submodule update --init --depth=1 CUE4Parse-Natives/ACL/external/acl
+          git -C external/CUE4Parse/CUE4Parse-Natives/ACL/external/acl submodule update --init --depth=1 external/rtm
+          $required = @(
+            'external/CUE4Parse/CUE4Parse-Natives/ACL/external/acl/includes',
+            'external/CUE4Parse/CUE4Parse-Natives/ACL/external/acl/external/rtm/includes'
+          )
+          foreach ($path in $required) {
+            if (-not (Test-Path $path)) { throw "Required submodule files are missing: $path" }
+          }
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
